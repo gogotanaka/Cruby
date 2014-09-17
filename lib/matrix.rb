@@ -60,6 +60,9 @@ end
 # * #minor(*param)
 # * #first_minor(row, column)
 # * #cofactor(row, column)
+# * #laplace_expansion(row_or_column: num)
+# * #cofactor_expansion(row_or_column: num)
+# * #cofact_exp(row_or_column: num)
 #
 # Properties of a matrix:
 # * #diagonal?
@@ -635,6 +638,36 @@ class Matrix
     det_of_minor = first_minor(row, column).determinant
     det_of_minor * (-1) ** (row + column)
   end
+
+  #
+  # Returns the laplace_expansion along +num+ -th +row_or_column+
+  #
+  #    Matrix[[Vector[1, 0], Vector[0, 1]], [2, 3]].laplace_expansion(row: 0)
+  #     => Vector[3, -2]
+  #
+  #    Matrix[[7,6], [3,9]].laplace_expansion(column: 1)
+  #     => 45
+  #
+  def laplace_expansion(row: nil, column: nil)
+    Matrix.Raise ErrDimensionMismatch unless square?
+    raise RuntimeError, "laplace_expansion of empty matrix is not defined" if empty?
+
+    num = row || column
+
+    if !num || (row && column)
+      raise ArgumentError, "should be hash which has either :row or :column as key"
+    end
+
+    unless 0 <= num && num < row_count
+      raise ArgumentError, "invalid num (#{num.inspect} for 0..#{row_count - 1})"
+    end
+
+    send(row ? :row : :column, num).map.with_index { |e, k|
+      e * cofactor(*(row ? [num, k] : [k,num]))
+    }.inject(:+)
+  end
+  alias_method :cofactor_expansion, :laplace_expansion
+  alias_method :cofact_exp, :laplace_expansion
 
   #--
   # TESTING -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
