@@ -2613,6 +2613,7 @@ rb_str_eql(VALUE str1, VALUE str2)
  *     "abcdef" <=> "abcdef"    #=> 0
  *     "abcdef" <=> "abcdefg"   #=> -1
  *     "abcdef" <=> "ABCDEF"    #=> 1
+ *     "abcdef" <=> 1           #=> nil
  */
 
 static VALUE
