@@ -1,0 +1,24 @@
+From 53532dbd62d8acee26d175a9c602a47737a5f55e Mon Sep 17 00:00:00 2001
+From: gogotanaka <mail@tanakakazuki.com>
+Date: Fri, 3 Oct 2014 17:02:09 -0700
+Subject: [PATCH] Add doc for String#<=>
+
+---
+ string.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/string.c b/string.c
+index fc6fe59..7a2fe2c 100644
+--- a/string.c
++++ b/string.c
+@@ -2613,6 +2613,7 @@ rb_str_eql(VALUE str1, VALUE str2)
+  *     "abcdef" <=> "abcdef"    #=> 0
+  *     "abcdef" <=> "abcdefg"   #=> -1
+  *     "abcdef" <=> "ABCDEF"    #=> 1
++ *     "abcdef" <=> 1           #=> nil
+  */
+ 
+ static VALUE
+-- 
+1.8.5.2 (Apple Git-48)
+
