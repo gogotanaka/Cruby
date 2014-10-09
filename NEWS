@@ -148,6 +148,7 @@ with all sufficient information, see the ChangeLog file.
       along the +num+ -th row or column.
     * Vector.basis(size:, index:) returns the specified basis vector
     * Unary - and + added for Vector and Matrix
+    * Vector#inner_product is aliased to Vector#dot. Vector#cross_product is aliased to Vector#cross.
 
 * Pathname
   * Pathname#/ is aliased to Pathname#+.
