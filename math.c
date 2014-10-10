@@ -897,37 +897,11 @@ math_lgamma(VALUE obj, VALUE x)
 }
 
 
-#define exp1(n) \
-VALUE \
-rb_math_##n(VALUE x)\
-{\
-    return math_##n(rb_mMath, x);\
-}
-
-#define exp2(n) \
-VALUE \
-rb_math_##n(VALUE x, VALUE y)\
-{\
-    return math_##n(rb_mMath, x, y);\
-}
-
-exp2(atan2)
-exp1(cos)
-exp1(cosh)
-exp1(exp)
-exp2(hypot)
-
 VALUE
 rb_math_log(int argc, const VALUE *argv)
 {
     return math_log(argc, argv, rb_mMath);
 }
-
-exp1(sin)
-exp1(sinh)
-#if 0
-exp1(sqrt)
-#endif
 
 
 /*
