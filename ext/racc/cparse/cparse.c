@@ -260,29 +260,11 @@ racc_yyparse(VALUE parser, VALUE lexer, VALUE lexmid, VALUE arg, VALUE sysdebug)
     return v->retval;
 }
 
-#ifdef HAVE_RB_BLOCK_CALL
 static void
 call_lexer(struct cparse_params *v)
 {
     rb_block_call(v->lexer, v->lexmid, 0, NULL, lexer_i, v->value_v);
 }
-#else
-static VALUE
-lexer_iter(VALUE data)
-{
-    struct cparse_params *v;
-
-    Data_Get_Struct(data, struct cparse_params, v);
-    rb_funcall(v->lexer, v->lexmid, 0);
-    return Qnil;
-}
-
-static void
-call_lexer(struct cparse_params *v)
-{
-    rb_iterate(lexer_iter, v->value_v, lexer_i, v->value_v);
-}
-#endif
 
 static VALUE
 lexer_i(RB_BLOCK_CALL_FUNC_ARGLIST(block_args, data))
