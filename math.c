@@ -925,9 +925,6 @@ rb_math_log(int argc, const VALUE *argv)
 
 exp1(sin)
 exp1(sinh)
-#if 0
-exp1(sqrt)
-#endif
 
 
 /*
