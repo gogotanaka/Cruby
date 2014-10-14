@@ -523,32 +523,6 @@ m_sin(VALUE x)
     }
 }
 
-#if 0
-imp1(sqrt)
-
-static VALUE
-m_sqrt(VALUE x)
-{
-    if (f_real_p(x)) {
-	if (f_positive_p(x))
-	    return m_sqrt_bang(x);
-	return f_complex_new2(rb_cComplex, ZERO, m_sqrt_bang(f_negate(x)));
-    }
-    else {
-	get_dat1(x);
-
-	if (f_negative_p(dat->imag))
-	    return f_conj(m_sqrt(f_conj(x)));
-	else {
-	    VALUE a = f_abs(x);
-	    return f_complex_new2(rb_cComplex,
-				  m_sqrt_bang(f_div(f_add(a, dat->real), TWO)),
-				  m_sqrt_bang(f_div(f_sub(a, dat->real), TWO)));
-	}
-    }
-}
-#endif
-
 inline static VALUE
 f_complex_polar(VALUE klass, VALUE x, VALUE y)
 {
