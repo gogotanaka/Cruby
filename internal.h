@@ -709,9 +709,6 @@ VALUE rb_math_hypot(VALUE, VALUE);
 VALUE rb_math_log(int argc, const VALUE *argv);
 VALUE rb_math_sin(VALUE);
 VALUE rb_math_sinh(VALUE);
-#if 0
-VALUE rb_math_sqrt(VALUE);
-#endif
 
 /* newline.c */
 void Init_newline(void);
