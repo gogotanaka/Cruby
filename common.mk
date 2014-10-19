@@ -920,7 +920,7 @@ EXT_SRCS = $(srcdir)/ext/ripper/ripper.c $(srcdir)/ext/json/parser/parser.c \
 
 srcs-ext: $(EXT_SRCS)
 
-srcs-enc: $(ENC_MK)
+srcs-enc: $(ENC_MK) lib/unicode_normalize/tables.rb
 	$(ECHO) making srcs under enc
 	$(Q) $(MAKE) -f $(ENC_MK) RUBY="$(MINIRUBY)" MINIRUBY="$(MINIRUBY)" $(MFLAGS) srcs
 
@@ -1094,6 +1094,11 @@ update-unicode: PHONY
 	$(Q) $(BASERUBY) -C "$(srcdir)/enc/unicode/data" \
 	    ../../../tool/downloader.rb unicode \
 	    UnicodeData.txt CompositionExclusions.txt NormalizationTest.txt
+
+lib/unicode_normalize/tables.rb: tool/unicode_norm_gen.rb \
+enc/unicode/data/UnicodeData.txt \
+enc/unicode/data/CompositionExclusions.txt
+	$(BASERUBY) -C "$(srcdir)/tool" unicode_norm_gen.rb
 
 info: info-program info-libruby_a info-libruby_so info-arch
 info-program: PHONY

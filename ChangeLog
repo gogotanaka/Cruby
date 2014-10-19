@@ -1,3 +1,43 @@
+Sun Oct 19 23:31:29 2014  CHIKANAGA Tomoyuki  <nagachika@ruby-lang.org>
+
+	* lib/unicode_normalize.rb: (unicode_normalize!): change method name.
+	  catch up the method name change at r48014. [Feature #10084]
+
+Sun Oct 19 20:05:58 2014  SHIBATA Hiroshi  <shibata.hiroshi@gmail.com>
+
+	* ext/tk/lib/tkextlib/tile/treeview.rb: fix syntax error.
+
+Sun Oct 19 18:39:39 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* enc/prelude.rb: Added automatic loading of
+	  lib/unicode_normalize.rb. This makes sure that all
+	  the methods that are available on String are
+	  available without explicit require.
+
+Sun Oct 19 18:35:35 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize/normalize.rb: Added a missing
+	  file extension in require statement.
+
+Sun Oct 19 18:13:13 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* common.mk: Added a rule to generate
+	  lib/unicode_normalize/tables.rb. This rule still
+	  needs to be integrated into the overall make process.
+
+Sun Oct 19 17:53:53 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize.rb: Changed to dynamic
+	  loading of actual normalization code and tables.
+
+Sun Oct 19 17:37:37 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize.rb: Small documentation fix.
+
+Sun Oct 19 17:26:26 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize.rb: Added documentation.
+
 Sun Oct 19 11:09:09 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
 
 	* tool/unicode_norm_gen.rb, lib/unicode_normalize.rb:
