@@ -1080,15 +1080,20 @@ nucomp_true(VALUE self)
 
 /*
  * call-seq:
- *    cmp.real?  ->  false
+ *    cmp.real?  ->  true or false
  *
- * Returns false.
+ * Returns true if imaginary part is 0.
+ *
+ *    Complex(7).real?      #=> true
+ *    Complex(9, -4).real?  #=> false
  */
 static VALUE
-nucomp_false(VALUE self)
+nucomp_real_p(VALUE self)
 {
-    return Qfalse;
+    get_dat1(self);
+    return f_zero_p(dat->imag);
 }
+
 
 #if 0
 /* :nodoc: */
@@ -2150,7 +2155,7 @@ Init_Complex(void)
     rb_define_method(rb_cComplex, "~", nucomp_conj, 0); /* gcc */
 #endif
 
-    rb_define_method(rb_cComplex, "real?", nucomp_false, 0);
+    rb_define_method(rb_cComplex, "real?", nucomp_real_p, 0);
 #if 0
     rb_define_method(rb_cComplex, "complex?", nucomp_true, 0);
     rb_define_method(rb_cComplex, "exact?", nucomp_exact_p, 0);

@@ -190,7 +190,10 @@ class Complex_Test < Test::Unit::TestCase
     c = Complex(1)
 
     assert_equal(false, c.integer?)
-    assert_equal(false, c.real?)
+
+    assert_equal(true, c.real?)
+    assert_equal(true, Complex(1,1).real?)
+    assert_equal(false, Complex(0,1).real?)
 
     assert_equal(true, Complex(0).zero?)
     assert_equal(true, Complex(0,0).zero?)
