@@ -1,3 +1,302 @@
+Sun Oct 25 11:24:24 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* string.c: improved comment.
+
+Sun Oct 26 07:40:11 2014  Masaki Suketa <masaki.suketa@nifty.ne.jp>
+
+	* ext/win32ole/win32ole.c (ole_val2variant, ole_invoke): refactoring.
+	  use ole_variant2variant to convert WIN32OLE_VARIANT object to
+	  VARIANT object.
+
+	* ext/win32ole/win32ole_variant.c: refactoring. add
+	  ole_variant2variant.
+	* ext/win32ole/win32ole_variant.h: ditto.
+
+Sat Oct 25 22:28:17 2014  Tanaka Akira  <akr@fsij.org>
+
+	* io.c (io_binwrite_string): Test writev() failure.
+
+>>>>>>> .r48141
+Sat Oct 25 20:19:19 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* test/test-unicode_normalize.rb: added test_us_ascii.
+
+Sat Oct 25 20:09:09 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize/normalize.rb: added US_ASCII
+	  as trivially supported encoding (is always normalized,
+	  and may appear mixed in with UTF-8 or other Unicode
+	  encodings).
+
+Sat Oct 25 20:01:01 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* test/test-unicode_normalize.rb: added
+	  test_raise_exception_for_non_unicode_encoding.
+
+Sat Oct 25 19:30:30 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* test/test-unicode_normalize.rb: removed unused function.
+
+Sat Oct 25 18:41:41 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* template/unicode_norm_gen.tmpl: Adjusted name of generating file.
+
+Fri Oct 24 22:49:42 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+
+	* parse.y (parser_yylex): dispatch newline and space at fluent
+	  interface, so that the following identifier does not include the
+	  space.  [ruby-dev:48684] [Bug #10411]
+
+Fri Oct 24 20:41:36 2014  Kazuhiro NISHIYAMA  <zn@mbf.nifty.com>
+
+	* signal.c (check_reserved_signal_): fix write count since r47991.
+
+Thu Oct 23 21:42:54 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+
+	* hash.c (rb_hash_delete): now does not call the block given to
+	  the current method.  [ruby-core:65861] [Bug #10413]
+
+Thu Oct 23 19:13:26 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+
+	* vm_method.c (rb_method_entry_make): warn redefinition only for
+	  already defined methods, but not for undefined methods.
+	  [ruby-dev:48691] [Bug #10421]
+
+Thu Oct 23 17:19:04 2014  Kouhei Sutou  <kou@cozmixng.org>
+
+	* lib/rexml/source.rb (REXML::IOSource#encoding_updated): Fix a
+	  bug that can't parse XML correctly when
+	  Encoding.default_internal is different with XML
+	  encoding. REXML::Source converts XML encoding on read. So IO
+	  should not convert XML encoding.
+	  Based on patch by NAKAMURA Usaku.
+	  [ruby-dev:48686] [Bug #10418]
+
+	* test/rexml/test_encoding.rb
+	  (REXMLTests::EncodingTester#test_parse_utf16_with_utf8_default_internal):
+	  Add the for the above case.
+
+Thu Oct 23 16:29:02 2014  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/rexml/test_encoding.rb
+	  (REXMLTests::EncodingTester#test_parse_utf16): Use meaningful
+	  test name. "ticket" in the old test name means the ticket in
+	  REXML's issue tracker. The REXML's issue tracker was gone. So
+	  "ticket" is meaningless.
+
+	* test/rexml/data/ticket_110_utf16.xml: Rename to ...
+	* test/rexml/data/utf16.xml: ... this.
+
+Thu Oct 23 16:18:11 2014  Kouhei Sutou  <kou@cozmixng.org>
+
+	* test/rexml/test_encoding.rb
+	  (REXMLTests::EncodingTester#test_ticket_110): Fix expected and
+	  actual order.
+	  Patch by NAKAMURA Usaku. Thanks!!!
+
+Thu Oct 23 10:47:16 2014  Eric Wong  <e@80x24.org>
+
+	* insns.def (getlocal,setlocal): add comment to def/opt_operand.def
+
+Thu Oct 23 10:22:41 2014  Eric Wong  <e@80x24.org>
+
+	* test/ruby/test_process.rb (test_deadlock_by_signal_at_forking):
+	  use IO#wait_readable instead of timeout
+
+Thu Oct 23 10:22:24 2014  Eric Wong  <e@80x24.org>
+
+	* test/ruby/test_process.rb (test_deadlock_by_signal_at_forking):
+	  ensure exit! during fork failure
+
+Thu Oct 23 10:21:21 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* NEWS: Added String#unicode_normalize(|!|d?) [ci skip]
+
+Thu Oct 23 03:41:51 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+
+	* class.c (unknown_keyword_error): delete expected keywords
+	  directly from raw table, so that the given block is not called.
+	  [ruby-core:65837] [Bug #10413]
+
+Thu Oct 23 02:33:01 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+
+	* common.mk (update-unicode): invert dependency to run every times.
+	  [ruby-core:65842] [Bug #10415]
+
+	* common.mk (after-update): update files under source tree.
+	  [ruby-core:65840] [Bug #10414]
+
+Wed Oct 22 22:38:59 2014  CHIKANAGA Tomoyuki  <nagachika@ruby-lang.org>
+
+	* ext/openssl/lib/openssl/ssl.rb (DEFAULT_PARAMS): override
+	  options even if OpenSSL::SSL::OP_NO_SSLv3 is not defined.
+	  this is pointed out by Stephen Touset. [ruby-core:65711] [Bug #9424]
+
+Wed Oct 22 21:31:56 2014  NAKAMURA Usaku  <usa@ruby-lang.org>
+
+	* common.mk (prelude.c): add dependency to LIB_SRCS because
+	  enc/prelude.rb requires lib/unicode_normalize.rb, and it's also
+	  requires lib/unicode_normalize/tables.rb (=LIB_SRCS).
+
+Wed Oct 22 21:09:51 2014  Yuki Yugui Sonoda  <yugui@yugui.jp>
+
+	* configure.in (nacl_cv_cpu_nick): fix typo in PNaCl.
+	  (XCFLAGS) Add -isystem flag to pnacl and nacl-newlib
+	  (CXX): added
+
+	* nacl/GNUmakefile.in (CXX): Added
+	  (PPROGRAM): Use clang++ instead of clang because libnacl_io
+	  depends on c++ std lib.
+
+Wed Oct 22 21:07:32 2014  Yuki Yugui Sonoda  <yugui@yugui.jp>
+
+	* common.mk (build-ext): avoid trying to build dynamic libraries
+	  if configured --with-static-linked-ext.
+
+Wed Oct 22 20:33:33 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* common.mk: Fixed grammar in comment [ci skip]
+
+Wed Oct 22 19:18:18 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* tool/unicode_norm_gen.rb: Fixed escaping of backslash and
+	  double quote ('\\\&' -> "\\\\\\\&"; double quoted string
+	  is needed to make \& mean last match; double double
+	  backslashes are needed because of two layers of escaping).
+
+Wed Oct 22 18:13:29 2014  NAKAMURA Usaku  <usa@ruby-lang.org>
+
+	* test/test-unicode_normalize.rb: as often said, ruby is sometimes built
+	  at non-srcdir.
+
+Wed Oct 22 18:12:12 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* test/test-unicode_normalize.rb: Adjusted path for test
+	  data file (now ../enc/unicode/data/NormalizationTest.txt).
+
+Wed Oct 22 18:07:07 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* test/test-unicode_normalize.rb: Removed explicit require,
+	  changed method names, adjusted copyright.
+
+Wed Oct 22 18:00:00 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* test/test-unicode_normalize.rb: Importing from
+	  https://github.com/duerst/eprun/blob/master/test/test_normalize.rb.
+	  (removing trailing whitespace, fixing EOLs and adding EOL property)
+
+Wed Oct 22 08:21:09 2014  Yuki Yugui Sonoda  <yugui@yugui.jp>
+
+	* nacl/pepper_main.c (Instance_DidCreate): mount devfs and rebind fd 0
+	  .. 2 so that stderr goes to the console of the browser.
+
+Wed Oct 22 03:47:43 2014  KOSAKI Motohiro  <kosaki.motohiro@gmail.com>
+
+	* ext/etc/etc.c (etc_nprocessors_affin): maximum "n" should be 16384.
+
+Wed Oct 22 03:37:00 2014  KOSAKI Motohiro  <kosaki.motohiro@gmail.com>
+
+	* ext/etc/etc.c (etc_nprocessors_affin): minor spell fix.
+
+Wed Oct 22 03:33:58 2014  KOSAKI Motohiro  <kosaki.motohiro@gmail.com>
+
+	* ext/etc/etc.c (etc_nprocessors_affin): optimize memory usage a
+	  bit. Typical rubyist never use 8k cpus machine.
+
+Wed Oct 22 00:01:09 2014  Yuki Yugui Sonoda  <yugui@yugui.jp>
+
+	* configure.in (XCFLAGS): Add include path for NaCl libraries.
+	  (XLDFLAGS): ditto.
+	  (NACL_LIB_PATH): new substitution
+
+	* nacl/nacl-config.rb: support NACL_LIB_PATH
+
+	* nacl/package.rb: ditto.
+
+	* nacl/pepper_main.c: replace old implementations with nacl_io.
+
+	* nacl/GNUmakefile.in: link nacl_io to pepper_ruby
+
+	* ruby.c (rb_load_file): remove __attribute__((weak)) because the old
+	  override hack was replaced with nacl_io.
+
+	* file.c (rb_file_load_ok): ditto.
+
+Tue Oct 21 17:32:32 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* common.mk: Adding explicit creation of directory
+	  enc/unicode/data because git doesn't handle empty
+	  directories. [patch by Masahiro Ide, filed with r48073]
+
+Tue Oct 21 17:12:12 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize/tables.rb: Committing to make version
+	  update easier and more predictable, and reducing compilation
+	  time.
+
+Tue Oct 21 15:56:56 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize/normalize.rb: Added comment to point to
+	  relevant portion of Unicode standard for Hangul (de)composition
+	  identifiers and algorithm.
+
+Tue Oct 21 11:49:16 2014  Andreas Schwab  <schwab@suse.de>
+
+	* gc.c (mark_current_machine_context) [__mc68000__]: Update stack
+	  marking.
+	  (rb_gc_mark_machine_stack) [__mc68000__]: Also handle it here.
+
+Mon Oct 20 23:59:38 2014  NAKAMURA Usaku  <usa@ruby-lang.org>
+
+	* enc/prelude.rb: we sometimes run ruby without library path (especially
+	  for test), so should permit to run ruby if unicode_normalize.rb is
+	  missing.
+
+Mon Oct 20 23:57:58 2014  NAKAMURA Usaku  <usa@ruby-lang.org>
+
+	* common.mk (lib/unicode_normalize/tables.rb): enable running (n)make
+	  in non-srcdir.
+
+Mon Oct 20 23:58:04 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+
+	* tool/downloader.rb: add -a option to always download regardless
+	  existing files.
+
+Mon Oct 20 23:18:18 2014  NAKAMURA Usaku  <usa@ruby-lang.org>
+
+	* lib/mkmf.rb: no need to convert path separator for COPY because it's
+	  ruby -run cp and it can treat '/' on any platform.
+
+Mon Oct 20 19:54:54 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* config.mk: Added missing data files as targets for
+	  prerequisite update_unicode.
+
+Mon Oct 20 19:06:06 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize.rb: revert r48046. The s in sIndex
+	  is not hungarian notation. The variable name sIndex is
+	  directly taken from the relevant part of the Unicode
+	  Standard, where it is written SIndex and stands for
+	  'syllable index'. See pp. 144/145 of
+	  http://www.unicode.org/versions/Unicode7.0.0/ch03.pdf.
+
+Mon Oct 20 12:46:46 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize.rb: removing unnecessary 'self'.
+
+Mon Oct 20 12:37:37 2014  Martin Duerst <duerst@it.aoyama.ac.jp>
+
+	* lib/unicode_normalize.rb: change method names
+	  in commented-out code. Followup to r48027.
+
+Mon Oct 20 02:23:27 2014  Nobuyoshi Nakada  <nobu@ruby-lang.org>
+
+	* variable.c (rb_ivar_get), vm_insnhelper.c (vm_getivar): improve
+	  instance variable retrieval performance by checking ruby_verbose
+	  before call of rb_warning and evaluation of its argument.
+	  [ruby-core:65786] [Feature #10396]
+
 Sun Oct 19 23:31:29 2014  CHIKANAGA Tomoyuki  <nagachika@ruby-lang.org>
 
 	* lib/unicode_normalize.rb: (unicode_normalize!): change method name.

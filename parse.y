@@ -7763,11 +7763,17 @@ parser_yylex(struct parser_params *parser)
 		space_seen = 1;
 		break;
 	      case '.': {
-		  if ((c = nextc()) != '.') {
-		      pushback(c);
-		      pushback('.');
-		      goto retry;
-		  }
+#ifdef RIPPER
+		ripper_dispatch_delayed_token(parser, tIGNORED_NL);
+#endif
+		if ((c = nextc()) != '.') {
+		    pushback(c);
+		    pushback('.');
+#ifdef RIPPER
+		    ripper_dispatch_scan_event(parser, tSP);
+#endif
+		    goto retry;
+		}
 	      }
 	      default:
 		--ruby_sourceline;

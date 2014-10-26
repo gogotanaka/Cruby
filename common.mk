@@ -182,7 +182,8 @@ $(EXTS_MK): $(MKFILES) all-incs $(PREP) $(RBCONFIG) $(LIBRUBY)
 configure-ext: $(EXTS_MK)
 
 build-ext: $(EXTS_MK)
-	$(Q)$(MAKE) -f $(EXTS_MK) $(MFLAGS) libdir="$(libdir)" LIBRUBY_EXTS=$(LIBRUBY_EXTS) ENCOBJS="$(ENCOBJS)"
+	$(Q)$(MAKE) -f $(EXTS_MK) $(MFLAGS) libdir="$(libdir)" LIBRUBY_EXTS=$(LIBRUBY_EXTS) \
+	    ENCOBJS="$(ENCOBJS)" ALWAYS_UPDATE_UNICODE=no $(EXTSTATIC)
 
 prog: program wprogram
 
@@ -913,14 +914,21 @@ INSNS2VMOPT = --srcdir="$(srcdir)"
 
 {$(VPATH)}vm.inc: $(srcdir)/template/vm.inc.tmpl
 
-srcs: {$(VPATH)}parse.c {$(VPATH)}lex.c {$(VPATH)}newline.c {$(VPATH)}id.c srcs-ext srcs-enc
+common-srcs: {$(VPATH)}parse.c {$(VPATH)}lex.c {$(VPATH)}newline.c {$(VPATH)}id.c \
+	     srcs-lib srcs-ext
+
+srcs: common-srcs srcs-enc
 
 EXT_SRCS = $(srcdir)/ext/ripper/ripper.c $(srcdir)/ext/json/parser/parser.c \
 	   $(srcdir)/ext/dl/callback/callback.c  $(srcdir)/ext/rbconfig/sizeof/sizes.c
 
 srcs-ext: $(EXT_SRCS)
 
-srcs-enc: $(ENC_MK) lib/unicode_normalize/tables.rb
+LIB_SRCS = $(srcdir)/lib/unicode_normalize/tables.rb
+
+srcs-lib: $(LIB_SRCS)
+
+srcs-enc: $(ENC_MK)
 	$(ECHO) making srcs under enc
 	$(Q) $(MAKE) -f $(ENC_MK) RUBY="$(MINIRUBY)" MINIRUBY="$(MINIRUBY)" $(MFLAGS) srcs
 
@@ -966,7 +974,7 @@ $(MINIPRELUDE_C): $(srcdir)/tool/compile_prelude.rb $(srcdir)/prelude.rb
 prelude.c: $(srcdir)/tool/compile_prelude.rb $(RBCONFIG) \
 	   $(srcdir)/lib/rubygems/defaults.rb \
 	   $(srcdir)/lib/rubygems/core_ext/kernel_gem.rb \
-	   $(PRELUDE_SCRIPTS) $(PREP)
+	   $(PRELUDE_SCRIPTS) $(PREP) $(LIB_SRCS)
 	$(ECHO) generating $@
 	$(Q) $(COMPILE_PRELUDE) $(PRELUDE_SCRIPTS) $@
 
@@ -1075,6 +1083,8 @@ dist:
 up::
 	-$(Q)$(MAKE) $(MFLAGS) REVISION_FORCE=PHONY "$(REVISION_H)"
 
+after-update:: update-unicode update-gems common-srcs
+
 update-config_files: PHONY
 	$(Q) $(BASERUBY) -C "$(srcdir)/tool" \
 	    ../tool/downloader.rb -e gnu \
@@ -1089,16 +1099,35 @@ update-gems: PHONY
 	    -e 'Downloader::RubyGems.download(gem)' \
 	    bundled_gems
 
-update-unicode: PHONY
-	$(ECHO) Downloading Unicode data files...
-	$(Q) $(BASERUBY) -C "$(srcdir)/enc/unicode/data" \
-	    ../../../tool/downloader.rb unicode \
-	    UnicodeData.txt CompositionExclusions.txt NormalizationTest.txt
+### set the following environment variable or uncomment the line if
+### the Unicode data files are updated every minute.
+# ALWAYS_UPDATE_UNICODE = yes
 
-lib/unicode_normalize/tables.rb: tool/unicode_norm_gen.rb \
-enc/unicode/data/UnicodeData.txt \
-enc/unicode/data/CompositionExclusions.txt
-	$(BASERUBY) -C "$(srcdir)/tool" unicode_norm_gen.rb
+UNICODE_FILES = $(srcdir)/enc/unicode/data/UnicodeData.txt \
+		$(srcdir)/enc/unicode/data/CompositionExclusions.txt \
+		$(srcdir)/enc/unicode/data/NormalizationTest.txt
+
+update-unicode: $(UNICODE_FILES) PHONY
+$(UNICODE_FILES): ./.update-unicode.time
+
+UPDATE_UNICODE_FILES_DEPS = $(ALWAYS_UPDATE_UNICODE:yes=PHONY)
+
+./.update-unicode.time: $(UPDATE_UNICODE_FILES_DEPS:no=)
+	$(ECHO) Downloading Unicode data files...
+	$(Q) $(MAKEDIRS) "$(srcdir)/enc/unicode/data"
+	$(Q) $(BASERUBY) -C "$(srcdir)/enc/unicode/data" \
+	    ../../../tool/downloader.rb -e $(ALWAYS_UPDATE_UNICODE:yes=-a) unicode \
+	    UnicodeData.txt CompositionExclusions.txt NormalizationTest.txt
+	@exit > .update-unicode.time
+
+$(srcdir)/lib/unicode_normalize/tables.rb: ./.unicode-tables.time
+
+./.unicode-tables.time: $(srcdir)/tool/generic_erb.rb \
+		$(srcdir)/template/unicode_norm_gen.tmpl $(UNICODE_FILES)
+	$(Q) $(BASERUBY) $(srcdir)/tool/generic_erb.rb \
+		-c -t$@ -o $(srcdir)/lib/unicode_normalize/tables.rb \
+		-I $(srcdir) \
+		$(srcdir)/template/unicode_norm_gen.tmpl enc/unicode/data lib/unicode_normalize
 
 info: info-program info-libruby_a info-libruby_so info-arch
 info-program: PHONY

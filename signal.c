@@ -731,13 +731,13 @@ rb_get_next_signal(void)
 
 #if defined(USE_SIGALTSTACK) || defined(_WIN32)
 NORETURN(void ruby_thread_stack_overflow(rb_thread_t *th));
-#if !(defined(HAVE_UCONTEXT_H) && (defined __i386__ || defined __x86_64__))
-#elif defined __linux__
-# define USE_UCONTEXT_REG 1
-#elif defined __APPLE__
-# define USE_UCONTEXT_REG 1
-#endif
-#ifdef USE_UCONTEXT_REG
+# if !(defined(HAVE_UCONTEXT_H) && (defined __i386__ || defined __x86_64__))
+# elif defined __linux__
+#   define USE_UCONTEXT_REG 1
+# elif defined __APPLE__
+#   define USE_UCONTEXT_REG 1
+# endif
+# ifdef USE_UCONTEXT_REG
 static void
 check_stack_overflow(const uintptr_t addr, const ucontext_t *ctx)
 {
@@ -773,7 +773,7 @@ check_stack_overflow(const uintptr_t addr, const ucontext_t *ctx)
 	ruby_thread_stack_overflow(th);
     }
 }
-#else
+# else
 static void
 check_stack_overflow(const void *addr)
 {
@@ -783,23 +783,23 @@ check_stack_overflow(const void *addr)
 	ruby_thread_stack_overflow(th);
     }
 }
-#endif
-#ifdef _WIN32
-#define CHECK_STACK_OVERFLOW() check_stack_overflow(0)
+# endif
+# ifdef _WIN32
+#   define CHECK_STACK_OVERFLOW() check_stack_overflow(0)
+# else
+#   define FAULT_ADDRESS info->si_addr
+#   ifdef USE_UCONTEXT_REG
+#     define CHECK_STACK_OVERFLOW() check_stack_overflow((uintptr_t)FAULT_ADDRESS, ctx)
+#   else
+#     define CHECK_STACK_OVERFLOW() check_stack_overflow(FAULT_ADDRESS)
+#   endif
+#   define MESSAGE_FAULT_ADDRESS " at %p", FAULT_ADDRESS
+# endif
 #else
-#define FAULT_ADDRESS info->si_addr
-# ifdef USE_UCONTEXT_REG
-# define CHECK_STACK_OVERFLOW() check_stack_overflow((uintptr_t)FAULT_ADDRESS, ctx)
-#else
-# define CHECK_STACK_OVERFLOW() check_stack_overflow(FAULT_ADDRESS)
-#endif
-#define MESSAGE_FAULT_ADDRESS " at %p", FAULT_ADDRESS
-#endif
-#else
-#define CHECK_STACK_OVERFLOW() (void)0
+# define CHECK_STACK_OVERFLOW() (void)0
 #endif
 #ifndef MESSAGE_FAULT_ADDRESS
-#define MESSAGE_FAULT_ADDRESS
+# define MESSAGE_FAULT_ADDRESS
 #endif
 
 #if defined SIGSEGV || defined SIGBUS || defined SIGILL || defined SIGFPE
@@ -888,8 +888,8 @@ check_reserved_signal_(const char *name, size_t name_len)
 	iov[3].iov_len = sizeof(msg2);
 	err = writev(2, iov, 4);
 #else
-	err = write(2, name, strlen(name));
-	err = write(2, msg1, name_len);
+	err = write(2, name, name_len);
+	err = write(2, msg1, sizeof(msg1));
 	err = write(2, prev, strlen(prev));
 	err = write(2, msg2, sizeof(msg2));
 #endif

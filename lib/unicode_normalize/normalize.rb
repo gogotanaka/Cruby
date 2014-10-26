@@ -14,19 +14,21 @@ module UnicodeNormalize
   REGEXP_C = Regexp.compile(REGEXP_C_STRING, Regexp::EXTENDED)
   REGEXP_K = Regexp.compile(REGEXP_K_STRING, Regexp::EXTENDED)
   NF_HASH_D = Hash.new do |hash, key|
-                         hash.delete hash.first[0] if hash.length>MAX_HASH_LENGTH # prevent DoS attack
-                         hash[key] = UnicodeNormalize.nfd_one(key)
+                         hash.shift if hash.length>MAX_HASH_LENGTH # prevent DoS attack
+                         hash[key] = nfd_one(key)
                        end
   NF_HASH_C = Hash.new do |hash, key|
-                         hash.delete hash.first[0] if hash.length>MAX_HASH_LENGTH # prevent DoS attack
-                         hash[key] = UnicodeNormalize.nfc_one(key)
+                         hash.shift if hash.length>MAX_HASH_LENGTH # prevent DoS attack
+                         hash[key] = nfc_one(key)
                        end
   NF_HASH_K = Hash.new do |hash, key|
-                         hash.delete hash.first[0] if hash.length>MAX_HASH_LENGTH # prevent DoS attack
-                         hash[key] = UnicodeNormalize.nfkd_one(key)
+                         hash.shift if hash.length>MAX_HASH_LENGTH # prevent DoS attack
+                         hash[key] = nfkd_one(key)
                        end
 
   ## Constants For Hangul
+  # for details such as the meaning of the identifiers below, please see
+  # http://www.unicode.org/versions/Unicode7.0.0/ch03.pdf, pp. 144/145
   SBASE = 0xAC00
   LBASE = 0x1100
   VBASE = 0x1161
@@ -42,16 +44,16 @@ module UnicodeNormalize
                        Encoding::GB18030, Encoding::UCS_2BE, Encoding::UCS_4BE]
 
   ## Hangul Algorithm
-  def UnicodeNormalize.hangul_decomp_one(target)
-    sIndex = target.ord - SBASE
-    return target if sIndex < 0 || sIndex >= SCOUNT
-    l = LBASE + sIndex / NCOUNT
-    v = VBASE + (sIndex % NCOUNT) / TCOUNT
-    t = TBASE + sIndex % TCOUNT
+  def self.hangul_decomp_one(target)
+    syllable_index = target.ord - SBASE
+    return target if syllable_index < 0 || syllable_index >= SCOUNT
+    l = LBASE + syllable_index / NCOUNT
+    v = VBASE + (syllable_index % NCOUNT) / TCOUNT
+    t = TBASE + syllable_index % TCOUNT
     (t==TBASE ? [l, v] : [l, v, t]).pack('U*') + target[1..-1]
   end
 
-  def UnicodeNormalize.hangul_comp_one(string)
+  def self.hangul_comp_one(string)
     length = string.length
     if length>1 and 0 <= (lead =string[0].ord-LBASE) and lead  < LCOUNT and
                     0 <= (vowel=string[1].ord-VBASE) and vowel < VCOUNT
@@ -67,7 +69,7 @@ module UnicodeNormalize
   end
 
   ## Canonical Ordering
-  def UnicodeNormalize.canonical_ordering_one(string)
+  def self.canonical_ordering_one(string)
     sorting = string.each_char.collect { |c| [c, CLASS_TABLE[c]] }
     (sorting.length-2).downto(0) do |i| # bubble sort
       (0..i).each do |j|
@@ -81,7 +83,7 @@ module UnicodeNormalize
   end
 
   ## Normalization Forms for Patterns (not whole Strings)
-  def UnicodeNormalize.nfd_one(string)
+  def self.nfd_one(string)
     string = string.dup
     (0...string.length).each do |position|
       if decomposition = DECOMPOSITION_TABLE[string[position]]
@@ -91,7 +93,7 @@ module UnicodeNormalize
     canonical_ordering_one(hangul_decomp_one(string))
   end
 
-  def UnicodeNormalize.nfkd_one(string)
+  def self.nfkd_one(string)
     string = string.dup
     position = 0
     while position < string.length
@@ -104,7 +106,7 @@ module UnicodeNormalize
     string
   end
 
-  def UnicodeNormalize.nfc_one (string)
+  def self.nfc_one (string)
     nfd_string = nfd_one string
     start = nfd_string[0]
     last_class = CLASS_TABLE[start]-1
@@ -121,7 +123,7 @@ module UnicodeNormalize
     hangul_comp_one(start+accents)
   end
 
-  def UnicodeNormalize.normalize(string, form = :nfc)
+  def self.normalize(string, form = :nfc)
     encoding = string.encoding
     if encoding == Encoding::UTF_8
       case form
@@ -136,6 +138,8 @@ module UnicodeNormalize
       else
         raise ArgumentError, "Invalid normalization form #{form}."
       end
+    elsif encoding == Encoding::US_ASCII
+      string
     elsif  UNICODE_ENCODINGS.include? encoding
       normalize(string.encode(Encoding::UTF_8), form).encode(encoding)
     else
@@ -143,7 +147,7 @@ module UnicodeNormalize
     end
   end
 
-  def UnicodeNormalize.normalized?(string, form = :nfc)
+  def self.normalized?(string, form = :nfc)
     encoding = string.encoding
     if encoding == Encoding::UTF_8
       case form
@@ -164,6 +168,8 @@ module UnicodeNormalize
       else
         raise ArgumentError, "Invalid normalization form #{form}."
       end
+    elsif encoding == Encoding::US_ASCII
+      true
     elsif  UNICODE_ENCODINGS.include? encoding
       normalized? string.encode(Encoding::UTF_8), form
     else
