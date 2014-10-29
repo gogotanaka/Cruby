@@ -1685,7 +1685,7 @@ end
 # * Vector.basis(size: n, index: k)
 #
 # To access elements:
-# * #[](i)
+# * #[](arg)
 #
 # To enumerate the elements:
 # * #each2(v)
@@ -1770,10 +1770,24 @@ class Vector
   # ACCESSING
 
   #
-  # Returns element number +i+ (starting at zero) of the vector.
+  # :call-seq:
+  #   vector[index] -> obj        or nil
+  #   vector[range] -> new_vector or nil
   #
-  def [](i)
-    @elements[i]
+  # Element Assignment — the element at index or
+  # replaces a new vector specified by the range of indices.
+  #
+  #   Vector[1, 2, 3][1]
+  #     => 2
+  #
+  #   Vector[1, 2, 3][1..-1]
+  #     => Vector[2, 3]
+  #
+  # Like Array#[], Negative indices will count backward from the end of the vector.
+  #
+  def [](arg)
+    return unless elements = @elements[arg]
+    arg.is_a?(Range) ? Vector[*elements] : elements
   end
   alias element []
   alias component []
