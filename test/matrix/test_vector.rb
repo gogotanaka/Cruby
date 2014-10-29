@@ -61,7 +61,10 @@ class TestVector < Test::Unit::TestCase
     assert_equal(2, @v1[1])
     assert_equal(3, @v1[2])
     assert_equal(3, @v1[-1])
-    assert_equal(nil, @v1[3])
+    assert_equal(Vector[1, 2], @v1[0..1])
+    assert_equal(Vector[2, 3], @v1[1..-1])
+    assert_nil(@v1[10..11])
+    assert_nil(@v1[3])
   end
 
   def test_size
