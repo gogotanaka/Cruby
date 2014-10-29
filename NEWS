@@ -157,6 +157,9 @@ with all sufficient information, see the ChangeLog file.
     * Unary - and + added for Vector and Matrix
     * Vector#cross_product generalized to arbitrary dimensions
     * Vector#dot and #cross are aliases for #inner_product and #cross_product
+  * Extended methods:
+    * Matrix#[] returns new vector if either arguments is range,
+      and returns new matrix, if both arguments are range.
 
 * Pathname
   * Pathname#/ is aliased to Pathname#+.
