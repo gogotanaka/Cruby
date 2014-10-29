@@ -154,6 +154,8 @@ with all sufficient information, see the ChangeLog file.
     * Matrix#laplace_expansion(row_or_column: num) returns the laplace_expansion
       along the +num+ -th row or column.
     * Vector.basis(size:, index:) returns the specified basis vector.
+    * independent? is new instance and class method which retruns true
+      iff all of vectors are linearly independent.
     * Unary - and + added for Vector and Matrix.
     * Vector#cross_product generalized to arbitrary dimensions.
     * Vector#dot and #cross are aliases for #inner_product and #cross_product.
