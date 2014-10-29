@@ -214,6 +214,10 @@ with all sufficient information, see the ChangeLog file.
 * Logger
   * Logger::Application is extracted to logger-application gem. It's unmaintain code.
 
+* Matrix
+  * incompatible changes:
+    * Vector#[] now returns new vector if argument is range.
+
 * Prime
   * incompatible changes:
     * Prime.prime? now returns false for negative numbers. This method
