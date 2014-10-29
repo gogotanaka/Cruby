@@ -74,6 +74,23 @@ class TestMatrix < Test::Unit::TestCase
     assert_equal(@m1, -(-@m1))
   end
 
+  def test_aref
+    assert_equal(5, @m1[1, 1])
+    assert_nil(@m1[1, 3])
+
+    assert_equal(Vector[1, 2], @m1[0, 0..1])
+    assert_equal(Vector[2, 3], @m1[0, 1..-1])
+    assert_nil(@m1[10, 0..1])
+    assert_nil(@m1[1, 10..11])
+
+    assert_equal(Vector[2, 5], @m1[0..1, 1])
+    assert_equal(Vector[3, 6], @m1[0..-1, 2])
+    assert_nil(@m1[10..11, 1])
+    assert_nil(@m1[0..1, 10])
+
+    assert_equal(@m1.minor(0..1, 0..1), @m1[0..1, 0..1])
+  end
+
   def test_rank
     [
       [[0]],
