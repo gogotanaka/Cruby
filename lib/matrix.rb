@@ -49,7 +49,7 @@ end
 # * Matrix.vstack(*matrices)
 #
 # To access Matrix elements/columns/rows/submatrices/properties:
-# * #[](i, j)
+# * #[](row_arg, col_arg)
 # * #row_count (row_size)
 # * #column_count (column_size)
 # * #row(i)
@@ -366,10 +366,43 @@ class Matrix
   private :new_matrix
 
   #
-  # Returns element (+i+,+j+) of the matrix.  That is: row +i+, column +j+.
+  # :call-seq:
+  #   matrix[row, column]          -> obj        or nil
+  #   matrix[row, col_range]       -> new_vector or nil
+  #   matrix[row_range, column]    -> new_vector or nil
+  #   matrix[row_range, col_range] -> new_matrix or nil
   #
-  def [](i, j)
-    @rows.fetch(i){return nil}[j]
+  #   Matrix.diagonal(9, 5, -3)[1, 1]
+  #     => 5
+  #
+  #   Matrix.diagonal(9, 5, -3)[1, 0..1]
+  #     => Vector[0, 5]
+  #
+  #   Matrix.diagonal(9, 5, -3)[0..1, 0]
+  #     => Vector[9, 0]
+  #
+  #   Matrix.diagonal(9, 5, -3)[0..1, 0..1]
+  #     => Matrix[[9, 0], [0, 5]]
+  #
+  # Like Array#[], negative indices count backward from the end of the
+  # row or column (-1 is the last element).
+  #
+  def [](row_arg, col_arg)
+    if row_arg.is_a?(Range)
+      if col_arg.is_a?(Range)
+        minor(row_arg, col_arg)
+      else
+        return unless col_vector = column(col_arg)
+        col_vector[row_arg]
+      end
+    else
+      if col_arg.is_a?(Range)
+        return unless row_vector = row(row_arg)
+        row_vector[col_arg]
+      else
+        @rows.fetch(row_arg){return nil}[col_arg]
+      end
+    end
   end
   alias element []
   alias component []
